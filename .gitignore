@@ -1,0 +1,30 @@
+# Archivos de Entorno y Claves Privadas (CRÍTICO)
+.env
+.env.local
+*.pem
+*.key
+
+# Base de Datos Local
+*.sqlite3
+*.db
+
+# Python & Entornos Virtuales
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos Estáticos de Django
+staticfiles/
+media/
+
+# Node / Dependencias Frontend (si aplican)
+node_modules/
+
+# Configuración de IDEs y OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

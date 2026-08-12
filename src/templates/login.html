@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - LifeBetter{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-body p-4 p-sm-5">
+                <h3 class="card-title text-center mb-4 text-primary fw-bold">
+                    <i class="bi bi-building-check"></i> LifeBetter
+                </h3>
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Tu correo o contraseña son incorrectos. Por favor intenta de nuevo.
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="username" class="form-control" id="id_username" placeholder="ejemplo@lifebetter.cl" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Contraseña</label>
+                        <input type="password" name="password" class="form-control" id="id_password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Iniciar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
