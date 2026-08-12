@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Iniciar Sesión - LifeBetter{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-5">
+<div class="row justify-content-center py-4">
     <div class="col-md-6 col-lg-5">
-        <div class="card shadow border-0 rounded-3">
+        <div class="card custom-card">
             <div class="card-body p-4 p-sm-5">
-                <h3 class="card-title text-center mb-4 text-primary fw-bold">
+                <h3 class="card-title text-center mb-4 text-primary-custom fw-bold">
                     <i class="bi bi-building-check"></i> LifeBetter
                 </h3>
                 
@@ -21,16 +22,30 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="id_username" class="form-label">Correo Electrónico</label>
-                        <input type="email" name="username" class="form-control" id="id_username" placeholder="ejemplo@lifebetter.cl" required autofocus>
+                        <input type="email" name="username" class="form-control" id="id_username" placeholder="ejemplo@lifebetter.cl" autocomplete="username" required autofocus>
                     </div>
                     <div class="mb-4">
                         <label for="id_password" class="form-label">Contraseña</label>
-                        <input type="password" name="password" class="form-control" id="id_password" placeholder="••••••••" required>
+                        <input type="password" name="password" class="form-control" id="id_password" placeholder="••••••••" autocomplete="current-password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Iniciar Sesión</button>
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2 fw-bold">Iniciar Sesión</button>
                 </form>
+
+                <!-- Panel de Carga Rápida -->
+                <div class="mt-4 pt-3 border-top text-center">
+                    <small class="text-muted d-block mb-2">⚡ Atajos de Prueba (Desarrollo Local)</small>
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fillCredentials('residente@lifebetter.cl')">Residente</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fillCredentials('conserje@lifebetter.cl')">Conserje</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fillCredentials('admin@lifebetter.cl')">Admin</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/login.js' %}"></script>
 {% endblock %}

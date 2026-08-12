@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Control de Portería - LifeBetter{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-shield-lock text-primary-custom"></i> Control de Portería y Acceso</h2>
+    <span class="badge bg-secondary fs-6">Conserjería</span>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Módulo de Accesos y Visitas -->
+    <div class="col-md-6">
+        <div class="card custom-card card-accent-info h-100">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="bi bi-person-badge"></i> Registro de Visitas Rápidas</h5>
+                <form onsubmit="event.preventDefault(); alert('Visita registrada en la bitácora.');">
+                    <div class="mb-2">
+                        <input type="text" class="form-control" placeholder="Nombre de la Visita / RUT" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <input type="text" class="form-control" placeholder="Depto Destino (Ej: 101)" required>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control" placeholder="Patente (Opcional)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100 btn-sm">Registrar Ingreso</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulo de Encomiendas -->
+    <div class="col-md-6">
+        <div class="card custom-card card-accent-warning h-100">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="bi bi-box-seam"></i> Paquetes / Delivery Recibidos</h5>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Depto">
+                    <input type="text" class="form-control" placeholder="Empresa (MercadoLibre, Amazon)">
+                    <button class="btn btn-outline-secondary" type="button">Añadir</button>
+                </div>
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Depto 101 - MercadoLibre (10:30 hrs)
+                        <button class="btn btn-sm btn-outline-success">Marcar Entregado</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agenda de Espacios Comunes -->
+<div class="card custom-card mb-4">
+    <div class="card-header bg-white fw-bold py-3">
+        <i class="bi bi-calendar-event"></i> Reservas de Áreas Comunes Programadas para Hoy
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Espacio</th>
+                    <th>Depto Solicitante</th>
+                    <th>Responsable</th>
+                    <th>Horario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in today_reservations %}
+                <tr>
+                    <td><strong>{{ res.common_area.name }}</strong></td>
+                    <td>Depto {{ res.department.number }}</td>
+                    <td>{{ res.user.get_full_name|default:res.user.email }}</td>
+                    <td>{{ res.start_time|date:"H:i" }} - {{ res.end_time|date:"H:i" }} hrs</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center py-3 text-muted">No hay reservas programadas para el día de hoy.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

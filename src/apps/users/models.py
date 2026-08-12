@@ -1,7 +1,7 @@
-# src/apps/users/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.conf import settings
+from django.core.validators import FileExtensionValidator
 
 class User(AbstractUser):
     """
@@ -45,3 +45,43 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.email} ({self.get_role_display()})"
+
+class ForumPost(models.Model):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='forum_posts',
+        verbose_name="Autor"
+    )
+    title = models.CharField(max_length=200, verbose_name="Título del Anuncio/Discusión")
+    content = models.TextField(verbose_name="Contenido (Admite Emojis 😃)")
+    image = models.ImageField(
+        upload_to='forum_images/%Y/%m/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'gif'])],
+        verbose_name="Imagen Adjunta (Opcional)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Publicación del Foro"
+        verbose_name_plural = "Publicaciones del Foro"
+
+    def __str__(self):
+        return f"{self.title} - {self.author.get_full_name() or self.author.email}"
+
+
+class ForumComment(models.Model):
+    post = models.ForeignKey(ForumPost, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField(verbose_name="Comentario")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"Comentario de {self.author.email} en '{self.post.title}'"

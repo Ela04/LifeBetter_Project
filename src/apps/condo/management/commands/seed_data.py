@@ -4,13 +4,34 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-
+from apps.users.models import User, ForumPost
 from apps.users.models import User
 from apps.condo.models import Condominium, Department
 from apps.expenses.models import CommonExpense
 from apps.expenses.services import ExpenseCalculatorService
 from apps.espacioscomunes.models import CommonArea
 
+
+# Obtenemos al usuario administrador como autor
+admin_user = User.objects.filter(role=User.Role.ADMIN).first()
+
+if admin_user:
+    post = ForumPost.objects.create(
+        author=admin_user,
+        title="📢 Cuarta Reunión Ordinaria de Vecinos — Este Jueves 19:00 hrs",
+        content="""Estimada comunidad,
+
+Les invitamos cordialmente a la 4.ª Reunión de Vecinos a realizarse este Jueves a las 19:00 hrs en la Sala de Reuniones N.º 1.
+
+Temas a tratar:
+1. Revisión de Gastos Comunes y Balance Financiero.
+2. Normativa de Uso de Espacios Comunes (Quinchos y Salón).
+3. Cotización de Seguridad para Portería (CCTV).
+4. Preguntas y Varios.
+
+¡Esperamos contar con su asistencia! Comenten esta publicación si tienen dudas previas."""
+    )
+    print(f"Publicación creada con éxito: ID {post.id}")
 
 class Command(BaseCommand):
     help = "Puebla la base de datos con información de prueba para probar el MVP de LifeBetter"

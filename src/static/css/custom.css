@@ -1,0 +1,124 @@
+/* ==========================================================================
+   LifeBetter SaaS - Custom CSS Stylesheet (Theme & UI Tokens)
+   Path: src/static/css/custom.css
+   ========================================================================== */
+
+/* 1. Design System & CSS Custom Properties */
+:root {
+    --lb-primary: #3a8a3a;          /* Verde principal institucional */
+    --lb-primary-hover: #2e6e2e;    /* Tono oscuro para hover */
+    --lb-primary-light: #eaf4ea;    /* Fondo acentuado claro */
+    
+    --lb-secondary: #6c757d;        /* Gris neutro */
+    --lb-dark: #212529;             /* Oscuro texto */
+    --lb-light: #f8f9fa;            /* Fondo claro página */
+    --lb-white: #ffffff;            /* Blanco puro */
+    
+    /* Colores de Estado */
+    --lb-success: #198754;          /* Pagado / Activo */
+    --lb-warning: #ffc107;          /* Pendiente / Alerta */
+    --lb-danger: #d9534f;           /* Morosidad / Deuda */
+    --lb-info: #0dcaf0;             /* Entrega / Información */
+
+    /* Typography & Layout Tokens */
+    --lb-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --lb-card-radius: 12px;
+    --lb-transition-fast: all 0.2s ease-in-out;
+    --lb-shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.04);
+    --lb-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* 2. Resets Globales */
+body {
+    background-color: var(--lb-light);
+    font-family: var(--lb-font-family);
+    color: var(--lb-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* 3. Utilidades & Botones Personalizados */
+.bg-primary-custom {
+    background-color: var(--lb-primary) !important;
+    color: var(--lb-white) !important;
+}
+
+.text-primary-custom {
+    color: var(--lb-primary) !important;
+}
+
+.btn-primary-custom {
+    background-color: var(--lb-primary);
+    border-color: var(--lb-primary);
+    color: var(--lb-white);
+    transition: var(--lb-transition-fast);
+}
+
+.btn-primary-custom:hover,
+.btn-primary-custom:focus {
+    background-color: var(--lb-primary-hover);
+    border-color: var(--lb-primary-hover);
+    color: var(--lb-white);
+}
+
+/* 4. Tarjetas Reutilizables (Cards) */
+.custom-card {
+    border: none;
+    border-radius: var(--lb-card-radius);
+    background-color: var(--lb-white);
+    box-shadow: var(--lb-shadow-sm);
+    transition: var(--lb-transition-fast);
+}
+
+.custom-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--lb-shadow-hover);
+}
+
+.card-accent-primary { border-left: 4px solid var(--lb-primary) !important; }
+.card-accent-warning { border-left: 4px solid var(--lb-warning) !important; }
+.card-accent-success { border-left: 4px solid var(--lb-success) !important; }
+.card-accent-danger { border-left: 4px solid var(--lb-danger) !important; }
+.card-accent-info { border-left: 4px solid var(--lb-info) !important; }
+
+/* 5. Dashboard & Calendario UI Enhancements */
+#calendar {
+    max-height: 400px;
+    background: var(--lb-white);
+    padding: 15px;
+    border-radius: var(--lb-card-radius);
+    box-shadow: var(--lb-shadow-sm);
+}
+
+.chart-container {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+/* 6. Foro de la Comunidad & Sticky Sidebar */
+.sticky-form-container {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 20px;
+    z-index: 10;
+}
+
+.post-image-preview {
+    max-height: 400px;
+    object-fit: cover;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.emoji-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.emoji-btn:hover {
+    transform: scale(1.3);
+}

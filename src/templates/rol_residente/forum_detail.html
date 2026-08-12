@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} - LifeBetter{% endblock %}
+
+{% block content %}
+<a href="{% url 'forum_list' %}" class="btn btn-outline-secondary btn-sm mb-3">&laquo; Volver al Foro</a>
+
+<div class="card custom-card mb-4">
+    <div class="card-body">
+        <h3 class="fw-bold">{{ post.title }}</h3>
+        <p class="text-muted small">Publicado por {{ post.author.get_full_name|default:post.author.email }} el {{ post.created_at|date:"d/m/Y H:i" }} hrs</p>
+        <hr>
+        <p>{{ post.content }}</p>
+    </div>
+</div>
+
+<h5 class="fw-bold mb-3">Comentarios</h5>
+
+{% for comment in post.comments.all %}
+<div class="card custom-card mb-2">
+    <div class="card-body py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <strong>{{ comment.author.get_full_name|default:comment.author.email }}</strong>
+            <small class="text-muted">{{ comment.created_at|date:"d/m/Y H:i" }}</small>
+        </div>
+        <p class="mb-0 mt-1">{{ comment.content }}</p>
+    </div>
+</div>
+{% empty %}
+<p class="text-muted">No hay comentarios aún.</p>
+{% endfor %}
+
+<div class="card custom-card mt-4">
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea name="content" class="form-control" rows="2" placeholder="Escribe un comentario..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary-custom btn-sm">Comentar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -98,7 +98,17 @@ USE_TZ = True
 
 # Archivos Estáticos
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Credenciales Transbank Webpay Plus (Integración / Sandbox de pruebas)
+TRANSBANK_COMMERCE_CODE = os.getenv('TRANSBANK_COMMERCE_CODE', '597055555532')
+TRANSBANK_API_KEY = os.getenv('TRANSBANK_API_KEY', '579B532A7440BB07B079DADC822D872C')

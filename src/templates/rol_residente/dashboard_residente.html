@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Hogar - LifeBetter{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-house-door text-primary-custom"></i> Panel del Residente</h2>
+    <span class="badge bg-success fs-6">Residente Activo</span>
+</div>
+
+<!-- KPIs Residente -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card custom-card card-accent-warning h-100">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase mb-1">Gastos Comunes Pendientes</h6>
+                <h3 class="fw-bold text-dark mb-0">{{ pending_bills.count }} Boleta(s)</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card custom-card card-accent-success h-100">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase mb-1">Próximas Reservas</h6>
+                <h3 class="fw-bold text-dark mb-0">{{ recent_reservations.count }} Reservada(s)</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Tabla de Cobros -->
+    <div class="col-lg-12">
+        <div class="card custom-card">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-receipt"></i> Mis Boletas
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Depto</th>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in recent_bills %}
+                        <tr>
+                            <!-- Dentro de src/templates/dashboard_residente.html -->
+                            <td>
+                                {% if bill.status != 'PAID' %}
+                                    <form action="{% url 'payments:initiate_payment' bill.id %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-primary-custom me-1">
+                                            <i class="bi bi-credit-card"></i> Pagar
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                
+                                <!-- Botón Descargar PDF -->
+                                <a href="{% url 'expenses:download_bill_pdf' bill.id %}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Descargar Boleta PDF">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-3 text-muted">No tienes boletas registradas.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

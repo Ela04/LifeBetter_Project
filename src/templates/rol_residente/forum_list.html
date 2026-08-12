@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Foro & Anuncios de la Comunidad - LifeBetter{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-chat-square-text text-primary-custom"></i> Foro de la Comunidad</h2>
+    <span class="badge bg-success fs-6">Comunidad Activa</span>
+</div>
+
+<div class="row g-4">
+    <!-- COLUMNA IZQUIERDA: FEED DE PUBLICACIONES (DINÁMICA CON SCROLL) -->
+    <div class="col-lg-7 col-xl-8">
+        {% for post in posts %}
+        <div class="card custom-card mb-4 shadow-sm">
+            <div class="card-body p-4">
+                <!-- Encabezado de la Publicación -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-primary-custom text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                            {{ post.author.first_name|default:post.author.email|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">{{ post.author.get_full_name|default:post.author.email }}</h6>
+                            <small class="text-muted"><i class="bi bi-clock"></i> {{ post.created_at|date:"d/m/Y H:i" }} hrs</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Título y Contenido (Soporta salto de línea y Emojis) -->
+                <h4 class="fw-bold text-dark mt-3 mb-2">{{ post.title }}</h4>
+                <p class="card-text text-secondary" style="white-space: pre-line;">{{ post.content }}</p>
+
+                <!-- Imagen Adjunta (Si existe) -->
+                {% if post.image %}
+                <div class="my-3">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image-preview img-fluid shadow-sm">
+                </div>
+                {% endif %}
+
+                <hr class="my-3">
+
+                <!-- Pie de Tarjeta: Acciones y Eliminación Seguro (RBAC + CSRF) -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'forum_detail' post.pk %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-chat-dots"></i> Discusión & Comentarios ({{ post.comments.count }})
+                    </a>
+
+                    {% if user == post.author or user.role == 'ADMIN' or user.is_staff or user.is_superuser %}
+                    <form action="{% url 'forum_delete' post.pk %}" method="POST" class="d-inline" onsubmit="return confirmDeletePost(event)">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card custom-card text-center py-5 shadow-sm">
+            <div class="card-body text-muted">
+                <i class="bi bi-chat-left-dots display-3 mb-3 d-block text-secondary"></i>
+                <h5 class="fw-bold">No hay publicaciones en el foro todavía.</h5>
+                <p class="mb-0">Sé el primero en compartir un comunicado o consulta a la comunidad.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- COLUMNA DERECHA: CREAR PUBLICACIÓN (ESTÁTICA / STICKY) -->
+    <div class="col-lg-5 col-xl-4">
+        <div class="sticky-form-container">
+            <div class="card custom-card border-start border-4 border-primary-custom shadow-sm">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="bi bi-pencil-square text-primary-custom"></i> Crear Nueva Publicación
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Título -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Título</label>
+                            <input type="text" name="title" class="form-control" placeholder="Ej: 📢 Reunión de vecinos" required>
+                        </div>
+
+                        <!-- Contenido con Botón Toggle de Emojis estilo WhatsApp -->
+                        <div class="mb-3 position-relative">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold mb-0">Contenido</label>
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="toggleEmojiPicker()" title="Seleccionar Emoji">
+                                    😊 Emojis
+                                </button>
+                            </div>
+                            <textarea id="postContent" name="content" class="form-control" rows="5" placeholder="Escribe tu mensaje para la comunidad..." required></textarea>
+                            
+                            <!-- Desplegable Flotante de Emojis -->
+                            <div id="emojiPickerContainer" class="d-none position-absolute end-0 mt-1 shadow-lg rounded z-3 bg-white">
+                                <emoji-picker></emoji-picker>
+                            </div>
+                        </div>
+
+                        <!-- Subir Imagen Adjunta -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="bi bi-image"></i> Adjuntar Imagen</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                        </div>
+
+                        <!-- Botón Submit -->
+                        <button type="submit" class="btn btn-primary-custom w-100 fw-bold py-2">
+                            <i class="bi bi-send"></i> Publicar en la Comunidad
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Archivo JS modular del foro -->
+<script src="{% static 'js/forum.js' %}"></script>
+<!-- Componente web de Emoji Picker tipo WhatsApp -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+{% endblock %}
