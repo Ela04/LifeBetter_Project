@@ -112,3 +112,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Credenciales Transbank Webpay Plus (Integración / Sandbox de pruebas)
 TRANSBANK_COMMERCE_CODE = os.getenv('TRANSBANK_COMMERCE_CODE', '597055555532')
 TRANSBANK_API_KEY = os.getenv('TRANSBANK_API_KEY', '579B532A7440BB07B079DADC822D872C')
+
+
+# Configuración de Servidor de Correos (SMTP / SendGrid)
+# En desarrollo (DEBUG=True) escribe los correos en la consola para testing rápido.
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.sendgrid.net')
+    EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'apikey')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@lifebetter.cl')

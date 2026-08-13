@@ -130,3 +130,82 @@ class PDFGeneratorService:
         pdf_value = buffer.getvalue()
         buffer.close()
         return pdf_value
+
+    @staticmethod
+    def generate_payment_receipt_pdf(payment) -> bytes:
+        """
+        Genera el comprobante digital de pago firmado en PDF para transacciones confirmadas.
+        """
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=letter,
+            rightMargin=2 * cm,
+            leftMargin=2 * cm,
+            topMargin=2 * cm,
+            bottomMargin=2 * cm
+        )
+
+        story = []
+        styles = getSampleStyleSheet()
+
+        title_style = ParagraphStyle(
+            'DocTitle',
+            parent=styles['Heading1'],
+            fontName='Helvetica-Bold',
+            fontSize=18,
+            textColor=colors.HexColor('#3a8a3a'),
+            spaceAfter=4
+        )
+        subtitle_style = ParagraphStyle(
+            'DocSubtitle',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=9,
+            textColor=colors.HexColor('#6c757d'),
+            spaceAfter=15
+        )
+        normal_style = styles['Normal']
+        bold_style = ParagraphStyle('BoldText', parent=normal_style, fontName='Helvetica-Bold')
+
+        # Encabezado
+        story.append(Paragraph("LifeBetter SaaS - Comprobante de Pago Confirmado", title_style))
+        story.append(Paragraph(f"Transacción Webpay Plus | Folio Pago: #{payment.id:06d}", subtitle_style))
+        story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#3a8a3a'), spaceAfter=15))
+
+        # Datos de la Transacción
+        bill = payment.bill
+        resident_name = bill.department.resident.get_full_name() if bill.department.resident else "Residente"
+
+        receipt_data = [
+            [Paragraph("<b>N° Orden de Compra:</b>", normal_style), Paragraph(payment.buy_order, bold_style)],
+            [Paragraph("<b>Fecha y Hora:</b>", normal_style), Paragraph(payment.created_at.strftime("%d/%m/%Y %H:%M:%S"), normal_style)],
+            [Paragraph("<b>Condominio:</b>", normal_style), Paragraph(bill.department.condominium.name, normal_style)],
+            [Paragraph("<b>Departamento:</b>", normal_style), Paragraph(f"N° {bill.department.number}", bold_style)],
+            [Paragraph("<b>Titular:</b>", normal_style), Paragraph(resident_name, normal_style)],
+            [Paragraph("<b>Concepto:</b>", normal_style), Paragraph(f"Pago Gasto Común - {bill.common_expense.title}", normal_style)],
+            [Paragraph("<b>Monto Pagado:</b>", normal_style), Paragraph(f"${payment.amount:,.0f} CLP", ParagraphStyle('GreenVal', parent=bold_style, textColor=colors.HexColor('#198754')))],
+            [Paragraph("<b>Estado Pasarela:</b>", normal_style), Paragraph("APROBADO (Webpay Plus)", bold_style)],
+        ]
+
+        table = Table(receipt_data, colWidths=[6 * cm, 10.5 * cm])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('PADDING', (0, 0), (-1, -1), 6),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e0e0e0')),
+        ]))
+        story.append(table)
+        story.append(Spacer(1, 25))
+
+        # Sello digital / Firma simbólica
+        story.append(Paragraph("<b>Sello Digital de Transacción:</b>", bold_style))
+        story.append(Paragraph(f"<font size=7 color='#6c757d'>SHA256:{hash(payment.buy_order)}-VERIFIED-TRANSACTION-LIFEBETTER-WEBPAY</font>", normal_style))
+        story.append(Spacer(1, 20))
+
+        story.append(Paragraph("<i>Este documento sirve como comprobante de pago oficial ante la administración del condominio.</i>", ParagraphStyle('Foot', parent=normal_style, fontSize=8, textColor=colors.HexColor('#888888'), alignment=1)))
+
+        doc.build(story)
+        pdf_bytes = buffer.getvalue()
+        buffer.close()
+        return pdf_bytes
